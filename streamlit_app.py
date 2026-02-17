@@ -1,35 +1,50 @@
 import streamlit as st
 import time
 
+# -------------------------------------------------
+# Page Setup
+# -------------------------------------------------
+
 st.set_page_config(
     page_title="AI Agent Susceptibility Assessment",
     layout="centered"
 )
 
-# ---------------------------
+# -------------------------------------------------
 # State Initialization
-# ---------------------------
+# -------------------------------------------------
 
 if "step" not in st.session_state:
     st.session_state.step = 1
 
-def next_step():
+total_steps = 5
+
+def go_next():
     st.session_state.step += 1
+    st.rerun()
+
+def go_back():
+    st.session_state.step -= 1
+    st.rerun()
 
 def restart():
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.session_state.step = 1
+    st.rerun()
 
-total_steps = 5
-progress = st.progress((st.session_state.step - 1) / total_steps)
+# -------------------------------------------------
+# Header
+# -------------------------------------------------
 
 st.title("AI Agent Structural Susceptibility Assessment")
-st.write("A guided structural exposure diagnostic.")
+st.write("A guided structural exposure diagnostic for AI agents.")
 
-# ---------------------------
+progress = st.progress((st.session_state.step - 1) / total_steps)
+
+# -------------------------------------------------
 # STEP 1 – Autonomy
-# ---------------------------
+# -------------------------------------------------
 
 if st.session_state.step == 1:
 
@@ -42,18 +57,20 @@ if st.session_state.step == 1:
 
         autonomy = st.radio(
             "",
-            ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
+            ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"],
+            key="autonomy_input"
         )
 
-        submitted = st.form_submit_button("Continue")
+        col1, col2 = st.columns([1, 1])
+        submitted = col2.form_submit_button("Continue")
 
         if submitted:
             st.session_state.autonomy = autonomy
-            next_step()
+            go_next()
 
-# ---------------------------
+# -------------------------------------------------
 # STEP 2 – Tool Access
-# ---------------------------
+# -------------------------------------------------
 
 elif st.session_state.step == 2:
 
@@ -64,17 +81,25 @@ elif st.session_state.step == 2:
             "Tool access materially increases operational risk."
         )
 
-        tool_access = st.checkbox("Agent can call external APIs or tools")
+        tool_access = st.checkbox(
+            "Agent can call external APIs or tools",
+            key="tool_input"
+        )
 
-        submitted = st.form_submit_button("Continue")
+        col1, col2 = st.columns([1, 1])
+        back = col1.form_submit_button("Back")
+        submitted = col2.form_submit_button("Continue")
+
+        if back:
+            go_back()
 
         if submitted:
             st.session_state.tool_access = tool_access
-            next_step()
+            go_next()
 
-# ---------------------------
+# -------------------------------------------------
 # STEP 3 – External Exposure
-# ---------------------------
+# -------------------------------------------------
 
 elif st.session_state.step == 3:
 
@@ -85,17 +110,25 @@ elif st.session_state.step == 3:
             "This increases prompt injection and misuse risk."
         )
 
-        public_input = st.checkbox("Agent accepts public or untrusted input")
+        public_input = st.checkbox(
+            "Agent accepts public or untrusted input",
+            key="public_input"
+        )
 
-        submitted = st.form_submit_button("Continue")
+        col1, col2 = st.columns([1, 1])
+        back = col1.form_submit_button("Back")
+        submitted = col2.form_submit_button("Continue")
+
+        if back:
+            go_back()
 
         if submitted:
             st.session_state.public_input = public_input
-            next_step()
+            go_next()
 
-# ---------------------------
+# -------------------------------------------------
 # STEP 4 – Data Sensitivity
-# ---------------------------
+# -------------------------------------------------
 
 elif st.session_state.step == 4:
 
@@ -112,18 +145,24 @@ elif st.session_state.step == 4:
                 "Low (non-sensitive)",
                 "Moderate (internal business data)",
                 "High (regulated / confidential)"
-            ]
+            ],
+            key="data_input"
         )
 
-        submitted = st.form_submit_button("Continue")
+        col1, col2 = st.columns([1, 1])
+        back = col1.form_submit_button("Back")
+        submitted = col2.form_submit_button("Continue")
+
+        if back:
+            go_back()
 
         if submitted:
             st.session_state.data_sensitivity = data_sensitivity
-            next_step()
+            go_next()
 
-# ---------------------------
+# -------------------------------------------------
 # STEP 5 – Decision Authority
-# ---------------------------
+# -------------------------------------------------
 
 elif st.session_state.step == 5:
 
@@ -136,18 +175,24 @@ elif st.session_state.step == 5:
 
         decision_impact = st.radio(
             "",
-            ["Advisory only", "Operational influence", "Automated execution"]
+            ["Advisory only", "Operational influence", "Automated execution"],
+            key="impact_input"
         )
 
-        submitted = st.form_submit_button("Generate Assessment")
+        col1, col2 = st.columns([1, 1])
+        back = col1.form_submit_button("Back")
+        submitted = col2.form_submit_button("Generate Assessment")
+
+        if back:
+            go_back()
 
         if submitted:
             st.session_state.decision_impact = decision_impact
-            next_step()
+            go_next()
 
-# ---------------------------
+# -------------------------------------------------
 # RESULTS
-# ---------------------------
+# -------------------------------------------------
 
 elif st.session_state.step == 6:
 
@@ -191,7 +236,7 @@ elif st.session_state.step == 6:
         color = "#C62828"
 
     with st.spinner("Analyzing structural exposure..."):
-        time.sleep(1.2)
+        time.sleep(1)
 
     st.header("Structural Exposure Level")
     st.markdown(f"<h1 style='color:{color}'>{exposure}</h1>", unsafe_allow_html=True)
