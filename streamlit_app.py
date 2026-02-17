@@ -79,7 +79,6 @@ def prev_step():
 def restart():
     st.session_state.clear()
     st.session_state.step = 1
-    st.rerun()
 
 # Ensure defaults exist (prevents missing attr errors if user refreshes mid-flow)
 st.session_state.setdefault("autonomy", "Human-in-the-loop")
@@ -375,3 +374,4 @@ elif st.session_state.step == 6:
             st.rerun()
     with col2:
         st.button("Restart Assessment", type="primary", on_click=restart, use_container_width=True)
+
