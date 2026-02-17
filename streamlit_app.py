@@ -15,18 +15,9 @@ if "step" not in st.session_state:
 
 total_steps = 5
 
-def go_next():
-    st.session_state.step += 1
-    st.rerun()
-
-def go_back():
-    st.session_state.step -= 1
-    st.rerun()
-
 def restart():
     st.session_state.clear()
     st.session_state.step = 1
-    st.rerun()
 
 # ---------------------------
 # Header
@@ -59,7 +50,7 @@ if st.session_state.step == 1:
 
         if submitted:
             st.session_state.autonomy = autonomy
-            go_next()
+            st.session_state.step = 2
 
 # ---------------------------
 # STEP 2 – Tool Access
@@ -83,11 +74,11 @@ elif st.session_state.step == 2:
         submitted = col2.form_submit_button("Continue")
 
         if back:
-            go_back()
+            st.session_state.step = 1
 
         if submitted:
             st.session_state.tool_access = tool_access
-            go_next()
+            st.session_state.step = 3
 
 # ---------------------------
 # STEP 3 – External Exposure
@@ -111,11 +102,11 @@ elif st.session_state.step == 3:
         submitted = col2.form_submit_button("Continue")
 
         if back:
-            go_back()
+            st.session_state.step = 2
 
         if submitted:
             st.session_state.public_input = public_input
-            go_next()
+            st.session_state.step = 4
 
 # ---------------------------
 # STEP 4 – Data Sensitivity
@@ -144,11 +135,11 @@ elif st.session_state.step == 4:
         submitted = col2.form_submit_button("Continue")
 
         if back:
-            go_back()
+            st.session_state.step = 3
 
         if submitted:
             st.session_state.data_sensitivity = data_sensitivity
-            go_next()
+            st.session_state.step = 5
 
 # ---------------------------
 # STEP 5 – Decision Authority
@@ -173,11 +164,11 @@ elif st.session_state.step == 5:
         submitted = col2.form_submit_button("Generate Assessment")
 
         if back:
-            go_back()
+            st.session_state.step = 4
 
         if submitted:
             st.session_state.decision_impact = decision_impact
-            go_next()
+            st.session_state.step = 6
 
 # ---------------------------
 # RESULTS
@@ -185,43 +176,31 @@ elif st.session_state.step == 5:
 
 elif st.session_state.step == 6:
 
-    autonomy = st.session_state.get("autonomy")
-    tool_access = st.session_state.get("tool_access", False)
-    public_input = st.session_state.get("public_input", False)
-    data_sensitivity = st.session_state.get("data_sensitivity")
-    decision_impact = st.session_state.get("decision_impact")
-
-    # Guard clause if something missing
-    if autonomy is None or data_sensitivity is None or decision_impact is None:
-        st.error("Assessment data missing. Please restart.")
-        st.button("Restart", on_click=restart)
-        st.stop()
-
     score = 0
 
-    if autonomy == "Fully autonomous":
+    if st.session_state.autonomy == "Fully autonomous":
         score += 3
-    elif autonomy == "Semi-autonomous":
+    elif st.session_state.autonomy == "Semi-autonomous":
         score += 2
     else:
         score += 1
 
-    if tool_access:
+    if st.session_state.get("tool_access"):
         score += 3
 
-    if public_input:
+    if st.session_state.get("public_input"):
         score += 2
 
-    if data_sensitivity == "High (regulated / confidential)":
+    if st.session_state.data_sensitivity == "High (regulated / confidential)":
         score += 3
-    elif data_sensitivity == "Moderate (internal business data)":
+    elif st.session_state.data_sensitivity == "Moderate (internal business data)":
         score += 2
     else:
         score += 1
 
-    if decision_impact == "Automated execution":
+    if st.session_state.decision_impact == "Automated execution":
         score += 3
-    elif decision_impact == "Operational influence":
+    elif st.session_state.decision_impact == "Operational influence":
         score += 2
     else:
         score += 1
@@ -242,14 +221,5 @@ elif st.session_state.step == 6:
     st.header("Structural Exposure Level")
     st.markdown(f"<h1 style='color:{color}'>{exposure}</h1>", unsafe_allow_html=True)
     st.write(f"Composite Risk Score: **{score}**")
-
-    st.subheader("Recommended Control Posture")
-
-    if exposure == "Low":
-        st.write("- Prompt version control\n- Logging and traceability\n- Basic input validation")
-    elif exposure == "Moderate":
-        st.write("- Guardrail layer\n- Human approval\n- Tool restrictions\n- Output validation")
-    else:
-        st.write("- Policy enforcement gateway\n- Strong oversight\n- Tool sandboxing\n- Audit capability")
 
     st.button("Restart Assessment", on_click=restart)
