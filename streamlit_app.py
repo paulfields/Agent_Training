@@ -1,32 +1,118 @@
 import streamlit as st
 
-st.set_page_config(page_title="AI Agent Susceptibility Demo", layout="wide")
+# -------------------------------------------------
+# Page Configuration
+# -------------------------------------------------
 
-st.title("AI Agent Susceptibility Assessment")
-st.markdown("Structured evaluation of agent exposure based on configuration profile.")
+st.set_page_config(
+    page_title="AI Agent Susceptibility Assessment",
+    layout="wide"
+)
 
-st.divider()
+# -------------------------------------------------
+# Custom Styling (Professional Tone)
+# -------------------------------------------------
 
-# ------------------------
-# Configuration Inputs
-# ------------------------
+st.markdown("""
+<style>
+body {
+    background-color: #F5F7FA;
+}
+.main {
+    background-color: #F5F7FA;
+}
+.section-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.helper-text {
+    color: #5f6b7a;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+</style>
+""", unsafe_allow_html=True)
 
-st.header("1. Agent Configuration")
+# -------------------------------------------------
+# Header
+# -------------------------------------------------
+
+st.markdown("## AI Agent Structural Susceptibility Assessment")
+st.markdown(
+    "This demo models structural exposure based on agent configuration choices. "
+    "It is intentionally simplified to stimulate structured team discussion."
+)
+
+st.markdown("---")
+
+# -------------------------------------------------
+# Configuration Section
+# -------------------------------------------------
+
+st.markdown('<div class="section-card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">1. Agent Configuration</div>', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
+
+    st.markdown("**Autonomy Level**")
+    st.markdown(
+        '<div class="helper-text">'
+        "Degree to which the agent acts independently without human review. "
+        "Higher autonomy increases systemic exposure."
+        "</div>",
+        unsafe_allow_html=True
+    )
+
     autonomy = st.selectbox(
-        "Autonomy Level",
+        "",
         ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
     )
 
+    st.markdown("**Tool Invocation Capability**")
+    st.markdown(
+        '<div class="helper-text">'
+        "Ability for the agent to execute external tools, APIs, or system actions. "
+        "Tool access materially increases operational risk."
+        "</div>",
+        unsafe_allow_html=True
+    )
+
     tool_access = st.checkbox("Agent can call external APIs or tools")
+
+    st.markdown("**External Exposure**")
+    st.markdown(
+        '<div class="helper-text">'
+        "Whether the agent accepts untrusted or public-facing input. "
+        "External exposure increases prompt injection and misuse risk."
+        "</div>",
+        unsafe_allow_html=True
+    )
+
     public_input = st.checkbox("Agent accepts public or untrusted input")
 
 with col2:
+
+    st.markdown("**Data Sensitivity Level**")
+    st.markdown(
+        '<div class="helper-text">'
+        "Nature of data the agent processes. "
+        "Higher sensitivity increases regulatory and reputational exposure."
+        "</div>",
+        unsafe_allow_html=True
+    )
+
     data_sensitivity = st.selectbox(
-        "Data Sensitivity Level",
+        "",
         [
             "Low (non-sensitive)",
             "Moderate (internal business data)",
@@ -34,20 +120,28 @@ with col2:
         ]
     )
 
+    st.markdown("**Decision Criticality**")
+    st.markdown(
+        '<div class="helper-text">'
+        "Degree to which agent outputs influence or execute business actions. "
+        "Execution authority significantly increases risk exposure."
+        "</div>",
+        unsafe_allow_html=True
+    )
+
     decision_impact = st.selectbox(
-        "Decision Criticality",
+        "",
         ["Advisory only", "Operational influence", "Automated execution"]
     )
 
-st.divider()
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------------
+# -------------------------------------------------
 # Scoring Logic
-# ------------------------
+# -------------------------------------------------
 
 risk_score = 0
 
-# Autonomy scoring
 if autonomy == "Fully autonomous":
     risk_score += 3
 elif autonomy == "Semi-autonomous":
@@ -55,15 +149,12 @@ elif autonomy == "Semi-autonomous":
 else:
     risk_score += 1
 
-# Tool access scoring
 if tool_access:
     risk_score += 3
 
-# Public exposure scoring
 if public_input:
     risk_score += 2
 
-# Data sensitivity scoring
 if data_sensitivity == "High (regulated / confidential)":
     risk_score += 3
 elif data_sensitivity == "Moderate (internal business data)":
@@ -71,17 +162,12 @@ elif data_sensitivity == "Moderate (internal business data)":
 else:
     risk_score += 1
 
-# Decision impact scoring
 if decision_impact == "Automated execution":
     risk_score += 3
 elif decision_impact == "Operational influence":
     risk_score += 2
 else:
     risk_score += 1
-
-# ------------------------
-# Risk Categorization
-# ------------------------
 
 if risk_score <= 6:
     exposure = "Low"
@@ -90,18 +176,29 @@ elif risk_score <= 11:
 else:
     exposure = "High"
 
-st.header("2. Susceptibility Assessment")
+# -------------------------------------------------
+# Results Section
+# -------------------------------------------------
 
-st.metric("Structural Exposure Level", exposure)
-st.metric("Composite Risk Score", risk_score)
+st.markdown('<div class="section-card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">2. Structural Exposure Assessment</div>', unsafe_allow_html=True)
 
-st.divider()
+colA, colB = st.columns(2)
 
-# ------------------------
-# Control Recommendations
-# ------------------------
+with colA:
+    st.metric("Exposure Level", exposure)
 
-st.header("3. Required Control Posture")
+with colB:
+    st.metric("Composite Risk Score", risk_score)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# -------------------------------------------------
+# Control Posture Section
+# -------------------------------------------------
+
+st.markdown('<div class="section-card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">3. Required Control Posture</div>', unsafe_allow_html=True)
 
 if exposure == "Low":
     st.success(
@@ -114,7 +211,7 @@ if exposure == "Low":
 elif exposure == "Moderate":
     st.warning(
         "Enhanced Controls Required:\n\n"
-        "- Guardrail layer (content filtering / policy engine)\n"
+        "- Guardrail layer (policy enforcement)\n"
         "- Human approval for high-impact outputs\n"
         "- Tool invocation restrictions\n"
         "- Structured output validation\n"
@@ -125,15 +222,14 @@ else:
         "High-Risk Configuration:\n\n"
         "Deployment should not proceed without:\n"
         "- Policy enforcement gateway\n"
-        "- Strong human oversight layer\n"
-        "- Tool sandboxing and execution constraints\n"
+        "- Strong human oversight\n"
+        "- Tool sandboxing constraints\n"
         "- Output validation framework\n"
         "- Audit and rollback capability\n"
     )
 
-st.divider()
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.caption(
-    "Demo model – intended to provoke structured discussion, "
-    "not serve as final governance framework."
+    "This model is illustrative. Weighting assumptions are intentionally transparent to enable refinement."
 )
