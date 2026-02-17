@@ -1,140 +1,102 @@
 import streamlit as st
 
 # -------------------------------------------------
-# Page Configuration
+# Page Setup
 # -------------------------------------------------
 
 st.set_page_config(
     page_title="AI Agent Susceptibility Assessment",
-    layout="wide"
+    layout="centered"
 )
 
 # -------------------------------------------------
-# Custom Styling (Professional Tone)
+# Clean Light Styling
 # -------------------------------------------------
 
 st.markdown("""
 <style>
-body {
-    background-color: #F5F7FA;
+html, body, [class*="css"]  {
+    background-color: #F3F5F8;
 }
-.main {
-    background-color: #F5F7FA;
+
+.block-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
-.section-card {
+
+.section {
     background-color: white;
     padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
 }
-.section-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+
+.section h2 {
+    margin-top: 0;
 }
-.helper-text {
-    color: #5f6b7a;
+
+.helper {
+    color: #6B7280;
     font-size: 0.9rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------
-# Header
+# Title
 # -------------------------------------------------
 
-st.markdown("## AI Agent Structural Susceptibility Assessment")
+st.title("AI Agent Structural Susceptibility Assessment")
+
 st.markdown(
-    "This demo models structural exposure based on agent configuration choices. "
-    "It is intentionally simplified to stimulate structured team discussion."
+    "This model evaluates structural exposure based on configuration choices. "
+    "It is intentionally simplified to support structured team discussion."
 )
 
-st.markdown("---")
+st.markdown("")
 
 # -------------------------------------------------
-# Configuration Section
+# Section 1 – Configuration
 # -------------------------------------------------
 
-st.markdown('<div class="section-card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">1. Agent Configuration</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">', unsafe_allow_html=True)
+st.markdown("## 1. Agent Configuration")
 
-col1, col2 = st.columns(2)
+st.markdown("### Autonomy Level")
+st.markdown('<div class="helper">Degree to which the agent operates independently. Higher autonomy increases systemic exposure.</div>', unsafe_allow_html=True)
+autonomy = st.selectbox(
+    "",
+    ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
+)
 
-with col1:
+st.markdown("### Tool Invocation Capability")
+st.markdown('<div class="helper">Ability for the agent to execute APIs or system actions. Tool access materially increases operational risk.</div>', unsafe_allow_html=True)
+tool_access = st.checkbox("Agent can call external APIs or tools")
 
-    st.markdown("**Autonomy Level**")
-    st.markdown(
-        '<div class="helper-text">'
-        "Degree to which the agent acts independently without human review. "
-        "Higher autonomy increases systemic exposure."
-        "</div>",
-        unsafe_allow_html=True
-    )
+st.markdown("### External Exposure")
+st.markdown('<div class="helper">Whether the agent accepts public or untrusted input. Increases prompt injection and misuse risk.</div>', unsafe_allow_html=True)
+public_input = st.checkbox("Agent accepts public or untrusted input")
 
-    autonomy = st.selectbox(
-        "",
-        ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
-    )
+st.markdown("### Data Sensitivity Level")
+st.markdown('<div class="helper">Nature of data processed. Higher sensitivity increases regulatory and reputational exposure.</div>', unsafe_allow_html=True)
+data_sensitivity = st.selectbox(
+    "",
+    [
+        "Low (non-sensitive)",
+        "Moderate (internal business data)",
+        "High (regulated / confidential)"
+    ]
+)
 
-    st.markdown("**Tool Invocation Capability**")
-    st.markdown(
-        '<div class="helper-text">'
-        "Ability for the agent to execute external tools, APIs, or system actions. "
-        "Tool access materially increases operational risk."
-        "</div>",
-        unsafe_allow_html=True
-    )
+st.markdown("### Decision Criticality")
+st.markdown('<div class="helper">Degree to which outputs influence or execute business actions.</div>', unsafe_allow_html=True)
+decision_impact = st.selectbox(
+    "",
+    ["Advisory only", "Operational influence", "Automated execution"]
+)
 
-    tool_access = st.checkbox("Agent can call external APIs or tools")
-
-    st.markdown("**External Exposure**")
-    st.markdown(
-        '<div class="helper-text">'
-        "Whether the agent accepts untrusted or public-facing input. "
-        "External exposure increases prompt injection and misuse risk."
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    public_input = st.checkbox("Agent accepts public or untrusted input")
-
-with col2:
-
-    st.markdown("**Data Sensitivity Level**")
-    st.markdown(
-        '<div class="helper-text">'
-        "Nature of data the agent processes. "
-        "Higher sensitivity increases regulatory and reputational exposure."
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    data_sensitivity = st.selectbox(
-        "",
-        [
-            "Low (non-sensitive)",
-            "Moderate (internal business data)",
-            "High (regulated / confidential)"
-        ]
-    )
-
-    st.markdown("**Decision Criticality**")
-    st.markdown(
-        '<div class="helper-text">'
-        "Degree to which agent outputs influence or execute business actions. "
-        "Execution authority significantly increases risk exposure."
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    decision_impact = st.selectbox(
-        "",
-        ["Advisory only", "Operational influence", "Automated execution"]
-    )
-
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------
 # Scoring Logic
@@ -177,59 +139,48 @@ else:
     exposure = "High"
 
 # -------------------------------------------------
-# Results Section
+# Section 2 – Assessment
 # -------------------------------------------------
 
-st.markdown('<div class="section-card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">2. Structural Exposure Assessment</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">', unsafe_allow_html=True)
+st.markdown("## 2. Structural Exposure Assessment")
 
-colA, colB = st.columns(2)
+st.markdown(f"### Exposure Level: **{exposure}**")
+st.markdown(f"Composite Risk Score: **{risk_score}**")
 
-with colA:
-    st.metric("Exposure Level", exposure)
-
-with colB:
-    st.metric("Composite Risk Score", risk_score)
-
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------
-# Control Posture Section
+# Section 3 – Control Posture
 # -------------------------------------------------
 
-st.markdown('<div class="section-card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">3. Required Control Posture</div>', unsafe_allow_html=True)
+st.markdown('<div class="section">', unsafe_allow_html=True)
+st.markdown("## 3. Required Control Posture")
 
 if exposure == "Low":
-    st.success(
-        "Baseline Controls Recommended:\n\n"
+    st.write(
         "- Prompt version control\n"
         "- Logging and traceability\n"
-        "- Basic input validation\n"
+        "- Basic input validation"
     )
 
 elif exposure == "Moderate":
-    st.warning(
-        "Enhanced Controls Required:\n\n"
+    st.write(
         "- Guardrail layer (policy enforcement)\n"
         "- Human approval for high-impact outputs\n"
         "- Tool invocation restrictions\n"
-        "- Structured output validation\n"
+        "- Structured output validation"
     )
 
 else:
-    st.error(
-        "High-Risk Configuration:\n\n"
-        "Deployment should not proceed without:\n"
+    st.write(
         "- Policy enforcement gateway\n"
         "- Strong human oversight\n"
         "- Tool sandboxing constraints\n"
         "- Output validation framework\n"
-        "- Audit and rollback capability\n"
+        "- Audit and rollback capability"
     )
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
-st.caption(
-    "This model is illustrative. Weighting assumptions are intentionally transparent to enable refinement."
-)
+st.caption("Illustrative model – weighting assumptions are transparent for refinement.")
