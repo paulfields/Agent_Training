@@ -24,8 +24,7 @@ def go_back():
     st.rerun()
 
 def restart():
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
+    st.session_state.clear()
     st.session_state.step = 1
     st.rerun()
 
@@ -36,7 +35,7 @@ def restart():
 st.title("AI Agent Structural Susceptibility Assessment")
 st.write("A guided structural exposure diagnostic for AI agents.")
 
-progress = st.progress((st.session_state.step - 1) / total_steps)
+st.progress((st.session_state.step - 1) / total_steps)
 
 # ---------------------------
 # STEP 1 – Autonomy
@@ -51,15 +50,15 @@ if st.session_state.step == 1:
             "Higher autonomy increases systemic exposure."
         )
 
-        st.radio(
+        autonomy = st.radio(
             "",
-            ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"],
-            key="autonomy"
+            ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
         )
 
         submitted = st.form_submit_button("Continue")
 
         if submitted:
+            st.session_state.autonomy = autonomy
             go_next()
 
 # ---------------------------
@@ -75,9 +74,8 @@ elif st.session_state.step == 2:
             "Tool access materially increases operational risk."
         )
 
-        st.checkbox(
-            "Agent can call external APIs or tools",
-            key="tool_access"
+        tool_access = st.checkbox(
+            "Agent can call external APIs or tools"
         )
 
         col1, col2 = st.columns(2)
@@ -88,6 +86,7 @@ elif st.session_state.step == 2:
             go_back()
 
         if submitted:
+            st.session_state.tool_access = tool_access
             go_next()
 
 # ---------------------------
@@ -103,9 +102,8 @@ elif st.session_state.step == 3:
             "This increases prompt injection and misuse risk."
         )
 
-        st.checkbox(
-            "Agent accepts public or untrusted input",
-            key="public_input"
+        public_input = st.checkbox(
+            "Agent accepts public or untrusted input"
         )
 
         col1, col2 = st.columns(2)
@@ -116,6 +114,7 @@ elif st.session_state.step == 3:
             go_back()
 
         if submitted:
+            st.session_state.public_input = public_input
             go_next()
 
 # ---------------------------
@@ -131,14 +130,13 @@ elif st.session_state.step == 4:
             "regulatory and reputational exposure."
         )
 
-        st.radio(
+        data_sensitivity = st.radio(
             "",
             [
                 "Low (non-sensitive)",
                 "Moderate (internal business data)",
                 "High (regulated / confidential)"
-            ],
-            key="data_sensitivity"
+            ]
         )
 
         col1, col2 = st.columns(2)
@@ -149,6 +147,7 @@ elif st.session_state.step == 4:
             go_back()
 
         if submitted:
+            st.session_state.data_sensitivity = data_sensitivity
             go_next()
 
 # ---------------------------
@@ -164,10 +163,9 @@ elif st.session_state.step == 5:
             "business actions."
         )
 
-        st.radio(
+        decision_impact = st.radio(
             "",
-            ["Advisory only", "Operational influence", "Automated execution"],
-            key="decision_impact"
+            ["Advisory only", "Operational influence", "Automated execution"]
         )
 
         col1, col2 = st.columns(2)
@@ -178,6 +176,7 @@ elif st.session_state.step == 5:
             go_back()
 
         if submitted:
+            st.session_state.decision_impact = decision_impact
             go_next()
 
 # ---------------------------
@@ -186,31 +185,43 @@ elif st.session_state.step == 5:
 
 elif st.session_state.step == 6:
 
+    autonomy = st.session_state.get("autonomy")
+    tool_access = st.session_state.get("tool_access", False)
+    public_input = st.session_state.get("public_input", False)
+    data_sensitivity = st.session_state.get("data_sensitivity")
+    decision_impact = st.session_state.get("decision_impact")
+
+    # Guard clause if something missing
+    if autonomy is None or data_sensitivity is None or decision_impact is None:
+        st.error("Assessment data missing. Please restart.")
+        st.button("Restart", on_click=restart)
+        st.stop()
+
     score = 0
 
-    if st.session_state.autonomy == "Fully autonomous":
+    if autonomy == "Fully autonomous":
         score += 3
-    elif st.session_state.autonomy == "Semi-autonomous":
+    elif autonomy == "Semi-autonomous":
         score += 2
     else:
         score += 1
 
-    if st.session_state.tool_access:
+    if tool_access:
         score += 3
 
-    if st.session_state.public_input:
+    if public_input:
         score += 2
 
-    if st.session_state.data_sensitivity == "High (regulated / confidential)":
+    if data_sensitivity == "High (regulated / confidential)":
         score += 3
-    elif st.session_state.data_sensitivity == "Moderate (internal business data)":
+    elif data_sensitivity == "Moderate (internal business data)":
         score += 2
     else:
         score += 1
 
-    if st.session_state.decision_impact == "Automated execution":
+    if decision_impact == "Automated execution":
         score += 3
-    elif st.session_state.decision_impact == "Operational influence":
+    elif decision_impact == "Operational influence":
         score += 2
     else:
         score += 1
@@ -231,5 +242,14 @@ elif st.session_state.step == 6:
     st.header("Structural Exposure Level")
     st.markdown(f"<h1 style='color:{color}'>{exposure}</h1>", unsafe_allow_html=True)
     st.write(f"Composite Risk Score: **{score}**")
+
+    st.subheader("Recommended Control Posture")
+
+    if exposure == "Low":
+        st.write("- Prompt version control\n- Logging and traceability\n- Basic input validation")
+    elif exposure == "Moderate":
+        st.write("- Guardrail layer\n- Human approval\n- Tool restrictions\n- Output validation")
+    else:
+        st.write("- Policy enforcement gateway\n- Strong oversight\n- Tool sandboxing\n- Audit capability")
 
     st.button("Restart Assessment", on_click=restart)
