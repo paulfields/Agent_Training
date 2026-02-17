@@ -22,13 +22,16 @@ with col1:
     )
 
     tool_access = st.checkbox("Agent can call external APIs or tools")
-
     public_input = st.checkbox("Agent accepts public or untrusted input")
 
 with col2:
     data_sensitivity = st.selectbox(
         "Data Sensitivity Level",
-        ["Low (non-sensitive)", "Moderate (internal business data)", "High (regulated / confidential)"]
+        [
+            "Low (non-sensitive)",
+            "Moderate (internal business data)",
+            "High (regulated / confidential)"
+        ]
     )
 
     decision_impact = st.selectbox(
@@ -44,7 +47,7 @@ st.divider()
 
 risk_score = 0
 
-# Autonomy
+# Autonomy scoring
 if autonomy == "Fully autonomous":
     risk_score += 3
 elif autonomy == "Semi-autonomous":
@@ -52,15 +55,15 @@ elif autonomy == "Semi-autonomous":
 else:
     risk_score += 1
 
-# Tool Access
+# Tool access scoring
 if tool_access:
     risk_score += 3
 
-# Public Input
+# Public exposure scoring
 if public_input:
     risk_score += 2
 
-# Data Sensitivity
+# Data sensitivity scoring
 if data_sensitivity == "High (regulated / confidential)":
     risk_score += 3
 elif data_sensitivity == "Moderate (internal business data)":
@@ -68,7 +71,7 @@ elif data_sensitivity == "Moderate (internal business data)":
 else:
     risk_score += 1
 
-# Decision Impact
+# Decision impact scoring
 if decision_impact == "Automated execution":
     risk_score += 3
 elif decision_impact == "Operational influence":
@@ -101,16 +104,36 @@ st.divider()
 st.header("3. Required Control Posture")
 
 if exposure == "Low":
-    st.success("""
-    **Baseline Controls Recommended**
-    - Prompt version control
-    - Logging and traceability
-    - Basic input validation
-    """)
+    st.success(
+        "Baseline Controls Recommended:\n\n"
+        "- Prompt version control\n"
+        "- Logging and traceability\n"
+        "- Basic input validation\n"
+    )
 
 elif exposure == "Moderate":
-    st.warning("""
-    **Enhanced Controls Required**
-    - Guardrail layer (content filtering / policy engine)
+    st.warning(
+        "Enhanced Controls Required:\n\n"
+        "- Guardrail layer (content filtering / policy engine)\n"
+        "- Human approval for high-impact outputs\n"
+        "- Tool invocation restrictions\n"
+        "- Structured output validation\n"
+    )
 
+else:
+    st.error(
+        "High-Risk Configuration:\n\n"
+        "Deployment should not proceed without:\n"
+        "- Policy enforcement gateway\n"
+        "- Strong human oversight layer\n"
+        "- Tool sandboxing and execution constraints\n"
+        "- Output validation framework\n"
+        "- Audit and rollback capability\n"
+    )
 
+st.divider()
+
+st.caption(
+    "Demo model – intended to provoke structured discussion, "
+    "not serve as final governance framework."
+)
