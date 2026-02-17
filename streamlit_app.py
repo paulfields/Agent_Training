@@ -15,9 +15,18 @@ if "step" not in st.session_state:
 
 total_steps = 5
 
+def next_step():
+    st.session_state.step += 1
+    st.rerun()
+
+def prev_step():
+    st.session_state.step -= 1
+    st.rerun()
+
 def restart():
     st.session_state.clear()
     st.session_state.step = 1
+    st.rerun()
 
 # ---------------------------
 # Header
@@ -34,23 +43,19 @@ st.progress((st.session_state.step - 1) / total_steps)
 
 if st.session_state.step == 1:
 
-    with st.form("step1"):
-        st.header("Autonomy Level")
-        st.write(
-            "Degree to which the agent operates independently without human review. "
-            "Higher autonomy increases systemic exposure."
-        )
+    st.header("Autonomy Level")
+    st.write(
+        "Degree to which the agent operates independently without human review. "
+        "Higher autonomy increases systemic exposure."
+    )
 
-        autonomy = st.radio(
-            "",
-            ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
-        )
+    st.session_state.autonomy = st.radio(
+        "",
+        ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
+    )
 
-        submitted = st.form_submit_button("Continue")
-
-        if submitted:
-            st.session_state.autonomy = autonomy
-            st.session_state.step = 2
+    if st.button("Continue"):
+        next_step()
 
 # ---------------------------
 # STEP 2 – Tool Access
@@ -58,27 +63,23 @@ if st.session_state.step == 1:
 
 elif st.session_state.step == 2:
 
-    with st.form("step2"):
-        st.header("Tool Invocation Capability")
-        st.write(
-            "Ability for the agent to execute APIs or system actions. "
-            "Tool access materially increases operational risk."
-        )
+    st.header("Tool Invocation Capability")
+    st.write(
+        "Ability for the agent to execute APIs or system actions. "
+        "Tool access materially increases operational risk."
+    )
 
-        tool_access = st.checkbox(
-            "Agent can call external APIs or tools"
-        )
+    st.session_state.tool_access = st.checkbox(
+        "Agent can call external APIs or tools"
+    )
 
-        col1, col2 = st.columns(2)
-        back = col1.form_submit_button("Back")
-        submitted = col2.form_submit_button("Continue")
+    col1, col2 = st.columns(2)
 
-        if back:
-            st.session_state.step = 1
+    if col1.button("Back"):
+        prev_step()
 
-        if submitted:
-            st.session_state.tool_access = tool_access
-            st.session_state.step = 3
+    if col2.button("Continue"):
+        next_step()
 
 # ---------------------------
 # STEP 3 – External Exposure
@@ -86,27 +87,23 @@ elif st.session_state.step == 2:
 
 elif st.session_state.step == 3:
 
-    with st.form("step3"):
-        st.header("External Exposure")
-        st.write(
-            "Whether the agent accepts public or untrusted input. "
-            "This increases prompt injection and misuse risk."
-        )
+    st.header("External Exposure")
+    st.write(
+        "Whether the agent accepts public or untrusted input. "
+        "This increases prompt injection and misuse risk."
+    )
 
-        public_input = st.checkbox(
-            "Agent accepts public or untrusted input"
-        )
+    st.session_state.public_input = st.checkbox(
+        "Agent accepts public or untrusted input"
+    )
 
-        col1, col2 = st.columns(2)
-        back = col1.form_submit_button("Back")
-        submitted = col2.form_submit_button("Continue")
+    col1, col2 = st.columns(2)
 
-        if back:
-            st.session_state.step = 2
+    if col1.button("Back"):
+        prev_step()
 
-        if submitted:
-            st.session_state.public_input = public_input
-            st.session_state.step = 4
+    if col2.button("Continue"):
+        next_step()
 
 # ---------------------------
 # STEP 4 – Data Sensitivity
@@ -114,32 +111,28 @@ elif st.session_state.step == 3:
 
 elif st.session_state.step == 4:
 
-    with st.form("step4"):
-        st.header("Data Sensitivity Level")
-        st.write(
-            "Nature of data processed. Higher sensitivity increases "
-            "regulatory and reputational exposure."
-        )
+    st.header("Data Sensitivity Level")
+    st.write(
+        "Nature of data processed. Higher sensitivity increases "
+        "regulatory and reputational exposure."
+    )
 
-        data_sensitivity = st.radio(
-            "",
-            [
-                "Low (non-sensitive)",
-                "Moderate (internal business data)",
-                "High (regulated / confidential)"
-            ]
-        )
+    st.session_state.data_sensitivity = st.radio(
+        "",
+        [
+            "Low (non-sensitive)",
+            "Moderate (internal business data)",
+            "High (regulated / confidential)"
+        ]
+    )
 
-        col1, col2 = st.columns(2)
-        back = col1.form_submit_button("Back")
-        submitted = col2.form_submit_button("Continue")
+    col1, col2 = st.columns(2)
 
-        if back:
-            st.session_state.step = 3
+    if col1.button("Back"):
+        prev_step()
 
-        if submitted:
-            st.session_state.data_sensitivity = data_sensitivity
-            st.session_state.step = 5
+    if col2.button("Continue"):
+        next_step()
 
 # ---------------------------
 # STEP 5 – Decision Authority
@@ -147,28 +140,24 @@ elif st.session_state.step == 4:
 
 elif st.session_state.step == 5:
 
-    with st.form("step5"):
-        st.header("Decision Criticality")
-        st.write(
-            "Degree to which agent outputs influence or directly execute "
-            "business actions."
-        )
+    st.header("Decision Criticality")
+    st.write(
+        "Degree to which agent outputs influence or directly execute "
+        "business actions."
+    )
 
-        decision_impact = st.radio(
-            "",
-            ["Advisory only", "Operational influence", "Automated execution"]
-        )
+    st.session_state.decision_impact = st.radio(
+        "",
+        ["Advisory only", "Operational influence", "Automated execution"]
+    )
 
-        col1, col2 = st.columns(2)
-        back = col1.form_submit_button("Back")
-        submitted = col2.form_submit_button("Generate Assessment")
+    col1, col2 = st.columns(2)
 
-        if back:
-            st.session_state.step = 4
+    if col1.button("Back"):
+        prev_step()
 
-        if submitted:
-            st.session_state.decision_impact = decision_impact
-            st.session_state.step = 6
+    if col2.button("Generate Assessment"):
+        next_step()
 
 # ---------------------------
 # RESULTS
@@ -185,10 +174,10 @@ elif st.session_state.step == 6:
     else:
         score += 1
 
-    if st.session_state.get("tool_access"):
+    if st.session_state.tool_access:
         score += 3
 
-    if st.session_state.get("public_input"):
+    if st.session_state.public_input:
         score += 2
 
     if st.session_state.data_sensitivity == "High (regulated / confidential)":
