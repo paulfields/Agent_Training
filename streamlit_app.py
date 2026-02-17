@@ -1,64 +1,17 @@
 import streamlit as st
 import time
 
-# -------------------------------------------------
-# Page Setup
-# -------------------------------------------------
-
 st.set_page_config(
     page_title="AI Agent Susceptibility Assessment",
     layout="centered"
 )
 
-# -------------------------------------------------
-# Styling
-# -------------------------------------------------
-
-st.markdown("""
-<style>
-.big-text {
-    font-size: 1.15rem;
-    color: #4B5563;
-    line-height: 1.6;
-}
-.question-title {
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-.result-box {
-    padding: 2rem;
-    border-radius: 12px;
-    background-color: #FFFFFF;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.05);
-    margin-top: 2rem;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# -------------------------------------------------
-# Session State Initialization
-# -------------------------------------------------
+# ---------------------------
+# State Initialization
+# ---------------------------
 
 if "step" not in st.session_state:
     st.session_state.step = 1
-
-if "risk_score" not in st.session_state:
-    st.session_state.risk_score = 0
-
-# -------------------------------------------------
-# Header
-# -------------------------------------------------
-
-st.title("AI Agent Structural Susceptibility Assessment")
-st.write("A guided structural exposure diagnostic for AI agents.")
-
-total_steps = 5
-progress = st.progress((st.session_state.step - 1) / total_steps)
-
-# -------------------------------------------------
-# Step Logic
-# -------------------------------------------------
 
 def next_step():
     st.session_state.step += 1
@@ -68,127 +21,141 @@ def restart():
         del st.session_state[key]
     st.session_state.step = 1
 
-# -------------------------------------------------
-# Step 1 – Autonomy
-# -------------------------------------------------
+total_steps = 5
+progress = st.progress((st.session_state.step - 1) / total_steps)
+
+st.title("AI Agent Structural Susceptibility Assessment")
+st.write("A guided structural exposure diagnostic.")
+
+# ---------------------------
+# STEP 1 – Autonomy
+# ---------------------------
 
 if st.session_state.step == 1:
-    st.markdown('<div class="question-title">Autonomy Level</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="big-text">'
-        "Degree to which the agent operates independently without human review. "
-        "Higher autonomy increases systemic exposure."
-        "</div>",
-        unsafe_allow_html=True
-    )
 
-    st.session_state.autonomy = st.radio(
-        "",
-        ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
-    )
+    with st.form("step1"):
+        st.header("Autonomy Level")
+        st.write(
+            "Degree to which the agent operates independently without human review. "
+            "Higher autonomy increases systemic exposure."
+        )
 
-    if st.button("Next"):
-        next_step()
+        autonomy = st.radio(
+            "",
+            ["Human-in-the-loop", "Semi-autonomous", "Fully autonomous"]
+        )
 
-# -------------------------------------------------
-# Step 2 – Tool Access
-# -------------------------------------------------
+        submitted = st.form_submit_button("Continue")
+
+        if submitted:
+            st.session_state.autonomy = autonomy
+            next_step()
+
+# ---------------------------
+# STEP 2 – Tool Access
+# ---------------------------
 
 elif st.session_state.step == 2:
-    st.markdown('<div class="question-title">Tool Invocation Capability</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="big-text">'
-        "Ability for the agent to execute APIs or system actions. "
-        "Tool access materially increases operational risk."
-        "</div>",
-        unsafe_allow_html=True
-    )
 
-    st.session_state.tool_access = st.checkbox("Agent can call external APIs or tools")
+    with st.form("step2"):
+        st.header("Tool Invocation Capability")
+        st.write(
+            "Ability for the agent to execute APIs or system actions. "
+            "Tool access materially increases operational risk."
+        )
 
-    if st.button("Next"):
-        next_step()
+        tool_access = st.checkbox("Agent can call external APIs or tools")
 
-# -------------------------------------------------
-# Step 3 – External Exposure
-# -------------------------------------------------
+        submitted = st.form_submit_button("Continue")
+
+        if submitted:
+            st.session_state.tool_access = tool_access
+            next_step()
+
+# ---------------------------
+# STEP 3 – External Exposure
+# ---------------------------
 
 elif st.session_state.step == 3:
-    st.markdown('<div class="question-title">External Exposure</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="big-text">'
-        "Whether the agent accepts public or untrusted input. "
-        "This increases prompt injection and misuse risk."
-        "</div>",
-        unsafe_allow_html=True
-    )
 
-    st.session_state.public_input = st.checkbox("Agent accepts public or untrusted input")
+    with st.form("step3"):
+        st.header("External Exposure")
+        st.write(
+            "Whether the agent accepts public or untrusted input. "
+            "This increases prompt injection and misuse risk."
+        )
 
-    if st.button("Next"):
-        next_step()
+        public_input = st.checkbox("Agent accepts public or untrusted input")
 
-# -------------------------------------------------
-# Step 4 – Data Sensitivity
-# -------------------------------------------------
+        submitted = st.form_submit_button("Continue")
+
+        if submitted:
+            st.session_state.public_input = public_input
+            next_step()
+
+# ---------------------------
+# STEP 4 – Data Sensitivity
+# ---------------------------
 
 elif st.session_state.step == 4:
-    st.markdown('<div class="question-title">Data Sensitivity Level</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="big-text">'
-        "Nature of data processed. Higher sensitivity increases "
-        "regulatory and reputational exposure."
-        "</div>",
-        unsafe_allow_html=True
-    )
 
-    st.session_state.data_sensitivity = st.radio(
-        "",
-        [
-            "Low (non-sensitive)",
-            "Moderate (internal business data)",
-            "High (regulated / confidential)"
-        ]
-    )
+    with st.form("step4"):
+        st.header("Data Sensitivity Level")
+        st.write(
+            "Nature of data processed. Higher sensitivity increases "
+            "regulatory and reputational exposure."
+        )
 
-    if st.button("Next"):
-        next_step()
+        data_sensitivity = st.radio(
+            "",
+            [
+                "Low (non-sensitive)",
+                "Moderate (internal business data)",
+                "High (regulated / confidential)"
+            ]
+        )
 
-# -------------------------------------------------
-# Step 5 – Decision Authority
-# -------------------------------------------------
+        submitted = st.form_submit_button("Continue")
+
+        if submitted:
+            st.session_state.data_sensitivity = data_sensitivity
+            next_step()
+
+# ---------------------------
+# STEP 5 – Decision Authority
+# ---------------------------
 
 elif st.session_state.step == 5:
-    st.markdown('<div class="question-title">Decision Criticality</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="big-text">'
-        "Degree to which agent outputs influence or directly execute "
-        "business actions."
-        "</div>",
-        unsafe_allow_html=True
-    )
 
-    st.session_state.decision_impact = st.radio(
-        "",
-        ["Advisory only", "Operational influence", "Automated execution"]
-    )
+    with st.form("step5"):
+        st.header("Decision Criticality")
+        st.write(
+            "Degree to which agent outputs influence or directly execute "
+            "business actions."
+        )
 
-    if st.button("Generate Assessment"):
-        next_step()
+        decision_impact = st.radio(
+            "",
+            ["Advisory only", "Operational influence", "Automated execution"]
+        )
 
-# -------------------------------------------------
-# Results
-# -------------------------------------------------
+        submitted = st.form_submit_button("Generate Assessment")
+
+        if submitted:
+            st.session_state.decision_impact = decision_impact
+            next_step()
+
+# ---------------------------
+# RESULTS
+# ---------------------------
 
 elif st.session_state.step == 6:
 
-    # Compute score
     score = 0
 
-    autonomy = st.session_state.autonomy
-    if autonomy == "Fully autonomous":
+    if st.session_state.autonomy == "Fully autonomous":
         score += 3
-    elif autonomy == "Semi-autonomous":
+    elif st.session_state.autonomy == "Semi-autonomous":
         score += 2
     else:
         score += 1
@@ -199,18 +166,16 @@ elif st.session_state.step == 6:
     if st.session_state.public_input:
         score += 2
 
-    data = st.session_state.data_sensitivity
-    if data == "High (regulated / confidential)":
+    if st.session_state.data_sensitivity == "High (regulated / confidential)":
         score += 3
-    elif data == "Moderate (internal business data)":
+    elif st.session_state.data_sensitivity == "Moderate (internal business data)":
         score += 2
     else:
         score += 1
 
-    impact = st.session_state.decision_impact
-    if impact == "Automated execution":
+    if st.session_state.decision_impact == "Automated execution":
         score += 3
-    elif impact == "Operational influence":
+    elif st.session_state.decision_impact == "Operational influence":
         score += 2
     else:
         score += 1
@@ -225,38 +190,20 @@ elif st.session_state.step == 6:
         exposure = "High"
         color = "#C62828"
 
-    # Animated reveal
     with st.spinner("Analyzing structural exposure..."):
-        time.sleep(1.5)
+        time.sleep(1.2)
 
-    st.markdown('<div class="result-box">', unsafe_allow_html=True)
-    st.markdown(f"### Structural Exposure Level")
+    st.header("Structural Exposure Level")
     st.markdown(f"<h1 style='color:{color}'>{exposure}</h1>", unsafe_allow_html=True)
-    st.markdown(f"Composite Risk Score: **{score}**")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.write(f"Composite Risk Score: **{score}**")
 
-    st.markdown("### Recommended Control Posture")
+    st.subheader("Recommended Control Posture")
 
     if exposure == "Low":
-        st.write(
-            "- Prompt version control\n"
-            "- Logging and traceability\n"
-            "- Basic input validation"
-        )
+        st.write("- Prompt version control\n- Logging and traceability\n- Basic input validation")
     elif exposure == "Moderate":
-        st.write(
-            "- Guardrail layer (policy enforcement)\n"
-            "- Human approval for high-impact outputs\n"
-            "- Tool invocation restrictions\n"
-            "- Structured output validation"
-        )
+        st.write("- Guardrail layer\n- Human approval\n- Tool restrictions\n- Output validation")
     else:
-        st.write(
-            "- Policy enforcement gateway\n"
-            "- Strong human oversight\n"
-            "- Tool sandboxing constraints\n"
-            "- Output validation framework\n"
-            "- Audit and rollback capability"
-        )
+        st.write("- Policy enforcement gateway\n- Strong oversight\n- Tool sandboxing\n- Audit capability")
 
     st.button("Restart Assessment", on_click=restart)
